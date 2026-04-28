@@ -1,12 +1,13 @@
 import sqlite3 as sql
 def initialize_database():
-    db = sql.connect("profit.db")
+    db = sql.connect("assets\\profit.db")
     cur = db.cursor()
     cur.execute("PRAGMA foreign_keys = ON")
     cur.execute("CREATE TABLE IF NOT EXISTS chance_outcomes(base_item," \
                                     "unique_item," \
                                     "chance_pct," \
                                     "avg_orbs," \
+                                    "min_ilvl," \
                                     "destruction_chance," \
                                     "tier," \
                                     "weight," \
