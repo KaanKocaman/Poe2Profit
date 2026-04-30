@@ -26,3 +26,18 @@ def fetch_unique_prices(db, league):
                         (item['Name'], item['CurrentPrice'], datetime.now().isoformat())
                     )
     db.commit()
+def fetch_currency_prices(db, league):
+    cursor = db.cursor()
+    headers = {"User-Agent": "Poe2Profit/1.0 https://github.com/KaanKocaman/Poe2Profit"}
+    urls = [f'https://poe2scout.com/api/poe2/Leagues/{league}/Currencies/ByCategory?Category=currency&Page=1&PerPage=25&Search=Orb+of+Chance&ReferenceCurrency=divine',
+            f'https://poe2scout.com/api/poe2/Leagues/{league}/Currencies/ByCategory?Category=currency&Page=1&PerPage=25&Search=Exalted+Orb&ReferenceCurrency=divine',
+            f'https://poe2scout.com/api/poe2/Leagues/{league}/Currencies/ByCategory?Category=currency&Page=1&PerPage=25&Search=Chaos+Orb&ReferenceCurrency=divine']
+    for url in urls:
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            output = response.json()
+            cursor.execute("INSERT OR REPLACE INTO currency_rates (currency_name, divine_equivalent, last_updated) VALUES(?, ?, ?)",
+                           (output['Items'][0]['Text'], output['Items'][0]['CurrentPrice'], datetime.now().isoformat())
+            )
+    db.commit()
+                          
