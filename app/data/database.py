@@ -40,4 +40,9 @@ def initialize_database():
                                     "PRIMARY KEY(base_item, unique_item)," \
                                     "FOREIGN KEY(base_item) REFERENCES base_prices(base_item)," \
                                     "FOREIGN KEY(unique_item) REFERENCES unique_prices(unique_item))")
+    cur.execute("CREATE TABLE IF NOT EXISTS app_config(key, value)")
     return db
+def save_poesessid(db, user_input):
+    cur = db.cursor()
+    cur.execute("INSERT OR REPLACE INTO app_config (key, value) VALUES (?, ?)",('poesessid', user_input))
+    db.commit()
