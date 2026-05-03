@@ -21,6 +21,10 @@ def fetch_base_prices(db, league, poesessid):
     "aug": "Orb of Augmentation",
     "transmute": "Orb of Transmutation",
     }
+    twenty_four_hours_ago = (datetime.datetime.now() - datetime.timedelta(hours=24)).isoformat()
+    cursor.execute("SELECT base_item FROM base_prices WHERE last_updated > ?", (twenty_four_hours_ago,))
+    already_fetched = set(row[0] for row in cursor.fetchall())
+    base_names = base_names - already_fetched
     total = len(base_names)
     current = 0
     for item in base_names.copy():
