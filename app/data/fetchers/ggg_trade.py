@@ -20,6 +20,8 @@ def fetch_base_prices(db, league, poesessid):
     "vaal": "Vaal Orb",
     "aug": "Orb of Augmentation",
     "transmute": "Orb of Transmutation",
+    "annul": "Orb of Annulment",
+    "alch": "Orb of Alchemy"
     }
     twenty_four_hours_ago = (datetime.datetime.now() - datetime.timedelta(hours=24)).isoformat()
     cursor.execute("SELECT base_item FROM base_prices WHERE last_updated > ?", (twenty_four_hours_ago,))
@@ -59,17 +61,21 @@ def fetch_base_prices(db, league, poesessid):
                     cookies=cookies
                 )
                 data = get_response.json()
-                for listing in data["result"]:
-                    currency_name = CURRENCY_MAP.get(listing["listing"]["price"]["currency"])
+                for entry in data["result"]:
+                    if entry is None:
+                        continue
+                    if entry.get("listing") is None:
+                        continue
+                    currency_name = CURRENCY_MAP.get(entry["listing"]["price"]["currency"])
                     if currency_name is None:
                         continue 
                     cursor.execute("SELECT divine_equivalent from currency_rates WHERE currency_name = ?", (currency_name,))
                     currency = cursor.fetchone()
                     if currency is None:
                         continue
-                    divine_price = listing["listing"]["price"]["amount"] * currency[0]
+                    divine_price = entry["listing"]["price"]["amount"] * currency[0]
                     cursor.execute("INSERT OR REPLACE INTO base_prices (base_item, price_divine, last_updated, listing_count) VALUES (?,?,?,?)",
-                                (listing["item"]["baseType"], divine_price, datetime.datetime.now().isoformat(), output["total"]))
+                                (entry["item"]["baseType"], divine_price, datetime.datetime.now().isoformat(), output["total"]))
                 db.commit()
                 break
             elif response_code==429:
