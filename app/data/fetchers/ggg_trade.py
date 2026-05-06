@@ -63,6 +63,12 @@ def fetch_base_prices(db, league, poesessid):
 
                 available = min(5, len(results))
                 if available == 0:
+                    cursor.execute("SELECT divine_equivalent FROM currency_rates WHERE currency_name = (?)", ("Exalted Orb",))
+                    exalt = cursor.fetchone()
+                    exalt_price = exalt[0] if exalt else 0
+                    cursor.execute("INSERT OR REPLACE INTO base_prices (base_item, price_divine, last_updated, listing_count) VALUES (?,?,?,?)",
+                                    (item, exalt_price, datetime.datetime.now().isoformat(), output["total"]))
+                    db.commit()
                     break
 
                 ids = ",".join(results[:available])
@@ -92,8 +98,11 @@ def fetch_base_prices(db, league, poesessid):
                         print(f"Skipping entry: {e}")
                         continue
                 if not prices_found:
+                    cursor.execute("SELECT divine_equivalent FROM currency_rates WHERE currency_name = (?)", ("Exalted Orb",))
+                    exalt = cursor.fetchone()
+                    exalt_price = exalt[0] if exalt else 0
                     cursor.execute("INSERT OR REPLACE INTO base_prices (base_item, price_divine, last_updated, listing_count) VALUES (?,?,?,?)",
-                                    (item, 0, datetime.datetime.now().isoformat(), output["total"]))
+                                    (item, exalt_price, datetime.datetime.now().isoformat(), output["total"]))
                 db.commit()
                 break
             
