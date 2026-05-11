@@ -25,8 +25,8 @@ def fetch_base_prices(db, league, poesessid):
     "alch": "Orb of Alchemy"
     }
 
-    five_hours_ago = (datetime.datetime.now() - datetime.timedelta(hours=5)).isoformat()
-    cursor.execute("SELECT base_item FROM base_prices WHERE last_updated > ?", (five_hours_ago,))
+    one_hour_ago = (datetime.datetime.now() - datetime.timedelta(hours=1)).isoformat()
+    cursor.execute("SELECT base_item FROM base_prices WHERE last_updated > ?", (one_hour_ago,))
     already_fetched = set(row[0] for row in cursor.fetchall()) # check for already fetched items, incase app crashes.
     base_names = base_names - already_fetched
 
