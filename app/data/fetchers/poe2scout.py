@@ -1,5 +1,6 @@
 import requests
 from datetime import datetime
+from app.config import USER_AGENT
 
 def fetch_unique_prices(db, league):
     cursor = db.cursor()
@@ -8,7 +9,7 @@ def fetch_unique_prices(db, league):
     cursor.execute("SELECT unique_item FROM chance_outcomes")
     chanceable_names = set(row[0] for row in cursor.fetchall())
     
-    headers = {"User-Agent": "Poe2Profit/1.0 https://github.com/KaanKocaman/Poe2Profit"}
+    headers = {"User-Agent": USER_AGENT}
     urls = [
         f"https://poe2scout.com/api/poe2/Leagues/{league}/Uniques/ByCategory?Category=armour&Page=1&PerPage=250&ReferenceCurrency=divine",
         f"https://poe2scout.com/api/poe2/Leagues/{league}/Uniques/ByCategory?Category=accessory&Page=1&PerPage=100&ReferenceCurrency=divine",
@@ -28,7 +29,7 @@ def fetch_unique_prices(db, league):
     db.commit()
 def fetch_currency_prices(db, league):
     cursor = db.cursor()
-    headers = {"User-Agent": "Poe2Profit/1.0 https://github.com/KaanKocaman/Poe2Profit"}
+    headers = {"User-Agent": USER_AGENT}
     urls = [f'https://poe2scout.com/api/poe2/Leagues/{league}/Currencies/ByCategory?Category=currency&Page=1&PerPage=50&ReferenceCurrency=divine']
     for url in urls:
         response = requests.get(url, headers=headers)

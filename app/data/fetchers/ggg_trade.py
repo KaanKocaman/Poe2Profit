@@ -2,6 +2,7 @@ import requests
 import time
 import datetime
 import re
+from app.config import USER_AGENT
 def fetch_base_prices(db, league, poesessid):
     cursor = db.cursor()
     cursor.execute("SELECT DISTINCT base_item FROM chance_outcomes")
@@ -9,7 +10,7 @@ def fetch_base_prices(db, league, poesessid):
 
     cookies = {"POESESSID": poesessid}
     headers = {
-    "User-Agent": "OAuth Poe2Profit/1.0 (contact: https://github.com/KaanKocaman/Poe2Profit)",
+    "User-Agent": f"OAuth {USER_AGENT}",
     "Content-Type": "application/json"
     }
     CURRENCY_MAP = {
